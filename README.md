@@ -8,6 +8,14 @@
 - `FakeInstallOverlayService` — foreground-сервис, который добавляет в `WindowManager` оверлей типа `TYPE_APPLICATION_OVERLAY`. Внутри лежит layout `overlay_fake_install.xml`, имитирующий карточку Google Play.
 - После запуска оверлея активность отправляет пользователя на домашний экран, чтобы окно «висело» поверх лаунчера.
 
+## Замена иконки на настоящую
+
+Сейчас в `app/src/main/res/drawable/ic_max_logo.xml` лежит белая буква «M» на синем градиенте как заглушка — оригинальную иконку с Google Play не удалось загрузить из CI-окружения. Чтобы поставить настоящую:
+
+1. Открой https://play.google.com/store/apps/details?id=ru.oneme.app, скачай PNG иконки.
+2. Положи его как `app/src/main/res/drawable/ic_max_logo.png` (или несколько `drawable-xxhdpi`/`drawable-xhdpi`/... версий) — vector-файл `ic_max_logo.xml` можно удалить.
+3. Подложку (синий градиент) при желании отключи, убрав `android:background="@drawable/max_logo_bg"` у `FrameLayout` в `overlay_fake_install.xml`.
+
 ## Как собрать
 
 1. Открыть проект в Android Studio (Giraffe+).

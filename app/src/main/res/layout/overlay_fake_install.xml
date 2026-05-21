@@ -46,14 +46,12 @@
                     android:layout_height="72dp"
                     android:background="@drawable/max_logo_bg">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:text="MAX"
-                        android:textColor="#FFFFFF"
-                        android:textStyle="bold"
-                        android:textSize="18sp" />
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:contentDescription="MAX"
+                        android:padding="6dp"
+                        android:src="@drawable/ic_max_logo" />
                 </FrameLayout>
 
                 <LinearLayout
@@ -66,15 +64,15 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="MAX"
+                        android:text="MAX: общение, звонки, сервисы"
                         android:textColor="#202124"
-                        android:textSize="20sp"
+                        android:textSize="18sp"
                         android:textStyle="bold" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="ВК"
+                        android:text="VK"
                         android:textColor="#1A73E8"
                         android:textSize="13sp" />
 
@@ -87,7 +85,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="4,3 ★"
+                            android:text="Связь"
                             android:textColor="#5F6368"
                             android:textSize="12sp" />
 
@@ -95,7 +93,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="14dp"
-                            android:text="50 млн+ загрузок"
+                            android:text="12+"
                             android:textColor="#5F6368"
                             android:textSize="12sp" />
                     </LinearLayout>
@@ -107,7 +105,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="Бесплатно · Содержит рекламу"
+                android:text="Бесплатно · Без рекламы · Покупки в приложении"
                 android:textColor="#5F6368"
                 android:textSize="13sp" />
 
@@ -169,7 +167,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:text="MAX — мессенджер от VK. Звонки, чаты и каналы в одном приложении."
+                android:text="MAX — быстрый мессенджер: чаты, аудио- и видеозвонки, каналы, мини-приложения, передача файлов до 4 ГБ, чат-боты и полезные сервисы. Регистрация по номеру +7 или +375."
                 android:textColor="#5F6368"
                 android:textSize="13sp" />
 
