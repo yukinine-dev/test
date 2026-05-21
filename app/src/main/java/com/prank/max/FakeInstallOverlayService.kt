@@ -85,53 +85,52 @@ class FakeInstallOverlayService : Service() {
         val installBtn = view.findViewById<Button>(R.id.btnInstall)
         val openBtn = view.findViewById<Button>(R.id.btnOpen)
         val cancelBtn = view.findViewById<Button>(R.id.btnCancel)
+        val progressArea = view.findViewById<View>(R.id.installProgressArea)
         val progress = view.findViewById<ProgressBar>(R.id.progressInstall)
         val status = view.findViewById<TextView>(R.id.txtStatus)
-        val close = view.findViewById<ImageView>(R.id.btnClose)
+        val back = view.findViewById<ImageView>(R.id.btnBack)
+        val settings = view.findViewById<ImageView>(R.id.btnSettings)
+        val permissions = view.findViewById<View>(R.id.cardPermissions)
 
-        // Кнопка "Установить" видна, прогресс скрыт
+        // Initial state
         installBtn.visibility = View.VISIBLE
-        progress.visibility = View.GONE
+        cancelBtn.visibility = View.VISIBLE
         openBtn.visibility = View.GONE
-        status.text = "Бесплатно · Содержит рекламу"
+        progressArea.visibility = View.GONE
+        status.text = "Установка…"
 
-        // Кнопка "Закрыть" в правом верхнем углу шторки – тоже не работает 😈
-        close.setOnClickListener {
-            vibrate()
-            status.text = "Невозможно закрыть. Установка обязательна."
-        }
-        cancelBtn.setOnClickListener {
-            vibrate()
-            status.text = "Действие недоступно"
+        // Inert top-bar and permissions card — все молча игнорируем нажатия
+        back.setOnClickListener { vibrate() }
+        settings.setOnClickListener { vibrate() }
+        permissions.setOnClickListener { vibrate() }
+        cancelBtn.setOnClickListener { vibrate() }
+
+        val startInstall = {
+            installBtn.visibility = View.GONE
+            cancelBtn.visibility = View.GONE
+            progressArea.visibility = View.VISIBLE
+            status.text = "Установка…"
+            animateProgress(progress, status, openBtn)
         }
 
         // Авто-нажатие кнопки "Установить" через 1.5 секунды
         handler.postDelayed({
             if (overlayView == null) return@postDelayed
-            // Визуально "нажимаем" кнопку
             installBtn.isPressed = true
             vibrate()
             handler.postDelayed({
                 installBtn.isPressed = false
-                installBtn.visibility = View.GONE
-                progress.visibility = View.VISIBLE
-                status.text = "Установка…"
-                animateProgress(progress, status, openBtn)
+                startInstall()
             }, 250)
         }, 1500)
 
         // На случай, если пользователь сам успеет нажать
-        installBtn.setOnClickListener {
-            installBtn.visibility = View.GONE
-            progress.visibility = View.VISIBLE
-            status.text = "Установка…"
-            animateProgress(progress, status, openBtn)
-        }
+        installBtn.setOnClickListener { startInstall() }
 
         openBtn.setOnClickListener {
             vibrate()
-            status.text = "Готово! Шутка, это пранк 😄"
-            handler.postDelayed({ stopSelf() }, 2500)
+            status.text = "Это пранк 😄"
+            handler.postDelayed({ stopSelf() }, 2000)
         }
 
         try {
