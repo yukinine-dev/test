@@ -41,18 +41,11 @@
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
-                <FrameLayout
+                <ImageView
                     android:layout_width="72dp"
                     android:layout_height="72dp"
-                    android:background="@drawable/max_logo_bg">
-
-                    <ImageView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:contentDescription="MAX"
-                        android:padding="6dp"
-                        android:src="@drawable/ic_max_logo" />
-                </FrameLayout>
+                    android:contentDescription="MAX"
+                    android:src="@drawable/ic_max_logo" />
 
                 <LinearLayout
                     android:layout_width="0dp"

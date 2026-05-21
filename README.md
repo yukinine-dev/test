@@ -8,13 +8,13 @@
 - `FakeInstallOverlayService` — foreground-сервис, который добавляет в `WindowManager` оверлей типа `TYPE_APPLICATION_OVERLAY`. Внутри лежит layout `overlay_fake_install.xml`, имитирующий карточку Google Play.
 - После запуска оверлея активность отправляет пользователя на домашний экран, чтобы окно «висело» поверх лаунчера.
 
-## Замена иконки на настоящую
+## Иконка
 
-Сейчас в `app/src/main/res/drawable/ic_max_logo.xml` лежит белая буква «M» на синем градиенте как заглушка — оригинальную иконку с Google Play не удалось загрузить из CI-окружения. Чтобы поставить настоящую:
+В качестве иконки приложения и иконки в карточке-пранке используется реальное лого MAX (480×480 PNG), разложенное по плотностям:
 
-1. Открой https://play.google.com/store/apps/details?id=ru.oneme.app, скачай PNG иконки.
-2. Положи его как `app/src/main/res/drawable/ic_max_logo.png` (или несколько `drawable-xxhdpi`/`drawable-xhdpi`/... версий) — vector-файл `ic_max_logo.xml` можно удалить.
-3. Подложку (синий градиент) при желании отключи, убрав `android:background="@drawable/max_logo_bg"` у `FrameLayout` в `overlay_fake_install.xml`.
+- `app/src/main/res/drawable/ic_max_logo.png` — карточка-пранк.
+- `app/src/main/res/mipmap-{m,h,xh,xxh,xxxh}dpi/ic_launcher{,_round}.png` — launcher-иконка.
+- `app/src/main/res/drawable-xxxhdpi/ic_launcher_foreground.png` + `mipmap-anydpi-v26/ic_launcher.xml` — adaptive-icon (фон `@color/iconBackground` = `#6895EE`).
 
 ## Как собрать
 
