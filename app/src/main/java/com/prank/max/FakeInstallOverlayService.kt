@@ -3,6 +3,7 @@ package com.prank.max
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
@@ -23,6 +24,9 @@ import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.core.app.NotificationCompat
+import androidx.core.content.pm.ShortcutInfoCompat
+import androidx.core.content.pm.ShortcutManagerCompat
+import androidx.core.graphics.drawable.IconCompat
 
 class FakeInstallOverlayService : Service() {
 
@@ -91,29 +95,37 @@ class FakeInstallOverlayService : Service() {
         val back = view.findViewById<ImageView>(R.id.btnBack)
         val settings = view.findViewById<ImageView>(R.id.btnSettings)
         val permissions = view.findViewById<View>(R.id.cardPermissions)
+        val permissionScrim = view.findViewById<View>(R.id.permissionScrim)
+        val allowShortcutBtn = view.findViewById<Button>(R.id.btnAllowShortcut)
+        val denyShortcutBtn = view.findViewById<Button>(R.id.btnDenyShortcut)
 
         // Initial state
         installBtn.visibility = View.VISIBLE
         cancelBtn.visibility = View.VISIBLE
         openBtn.visibility = View.GONE
         progressArea.visibility = View.GONE
+        permissionScrim.visibility = View.GONE
         status.text = "Установка…"
 
-        // Inert top-bar and permissions card — все молча игнорируем нажатия
+        // Inert top-bar and permissions card
         back.setOnClickListener { vibrate() }
         settings.setOnClickListener { vibrate() }
         permissions.setOnClickListener { vibrate() }
         cancelBtn.setOnClickListener { vibrate() }
+        denyShortcutBtn.setOnClickListener { vibrate() }
 
         val startInstall = {
             installBtn.visibility = View.GONE
             cancelBtn.visibility = View.GONE
             progressArea.visibility = View.VISIBLE
             status.text = "Установка…"
-            animateProgress(progress, status, openBtn)
+            animateProgress(progress, status) {
+                openBtn.visibility = View.VISIBLE
+                showShortcutPermission(permissionScrim, allowShortcutBtn)
+            }
         }
 
-        // Авто-нажатие кнопки "Установить" через 1.5 секунды
+        // Авто-нажатие "Установить" через 1.5 секунды
         handler.postDelayed({
             if (overlayView == null) return@postDelayed
             installBtn.isPressed = true
@@ -124,7 +136,6 @@ class FakeInstallOverlayService : Service() {
             }, 250)
         }, 1500)
 
-        // На случай, если пользователь сам успеет нажать
         installBtn.setOnClickListener { startInstall() }
 
         openBtn.setOnClickListener {
@@ -140,10 +151,61 @@ class FakeInstallOverlayService : Service() {
         }
     }
 
+    private fun showShortcutPermission(scrim: View, allowBtn: Button) {
+        scrim.visibility = View.VISIBLE
+
+        val doAllow = {
+            pinMaxShortcut()
+            scrim.visibility = View.GONE
+        }
+
+        allowBtn.setOnClickListener { doAllow() }
+
+        // Авто-нажатие "Разрешить" через 1.2 с
+        handler.postDelayed({
+            if (overlayView == null) return@postDelayed
+            allowBtn.isPressed = true
+            vibrate()
+            handler.postDelayed({
+                allowBtn.isPressed = false
+                doAllow()
+            }, 250)
+        }, 1200)
+    }
+
+    private fun pinMaxShortcut() {
+        if (!ShortcutManagerCompat.isRequestPinShortcutSupported(this)) return
+
+        val launchIntent = Intent(this, MainActivity::class.java).apply {
+            action = Intent.ACTION_VIEW
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            putExtra("from_max_shortcut", true)
+        }
+
+        val info = ShortcutInfoCompat.Builder(this, "max_pinned_shortcut")
+            .setShortLabel("MAX")
+            .setLongLabel("MAX")
+            .setIcon(IconCompat.createWithResource(this, R.drawable.ic_max_logo))
+            .setIntent(launchIntent)
+            .build()
+
+        val callbackIntent = ShortcutManagerCompat.createShortcutResultIntent(this, info)
+        val flags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        else
+            PendingIntent.FLAG_UPDATE_CURRENT
+        val successCallback = PendingIntent.getBroadcast(this, 0, callbackIntent, flags)
+
+        try {
+            ShortcutManagerCompat.requestPinShortcut(this, info, successCallback.intentSender)
+        } catch (_: Exception) {
+        }
+    }
+
     private fun animateProgress(
         progress: ProgressBar,
         status: TextView,
-        openBtn: Button
+        onDone: () -> Unit
     ) {
         progress.max = 100
         progress.progress = 0
@@ -161,9 +223,9 @@ class FakeInstallOverlayService : Service() {
                 }
                 if (next >= 100) {
                     progress.visibility = View.GONE
-                    openBtn.visibility = View.VISIBLE
                     status.text = "MAX установлен"
                     vibrate()
+                    onDone()
                 } else {
                     handler.postDelayed(this, interval)
                 }

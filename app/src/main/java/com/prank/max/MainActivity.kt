@@ -42,6 +42,13 @@ class MainActivity : AppCompatActivity() {
                 requestOverlayPermission()
             }
         }
+
+        // Если открыли с запинённого ярлыка MAX — сразу запускаем пранк ещё раз
+        if (intent?.getBooleanExtra("from_max_shortcut", false) == true &&
+            Settings.canDrawOverlays(this)
+        ) {
+            startPrank()
+        }
     }
 
     override fun onResume() {
