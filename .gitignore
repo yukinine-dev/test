@@ -10,3 +10,6 @@ captures/
 *.apk
 *.aab
 *.keystore
+node_modules/
+/package-lock.json
+/package.json
